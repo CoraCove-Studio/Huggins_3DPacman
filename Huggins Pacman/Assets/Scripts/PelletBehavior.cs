@@ -21,8 +21,8 @@ public class PelletBehavior : MonoBehaviour
 
     // counting the amount of pellets collected and seeing it for testing purposes
     [Header ("Pellet Count Information")]
-    [SerializeField] private int num_Pellets_Collected = 0;
-    [SerializeField] private GameObject[] pellets_in_maze;     // referencing the amount of pellets in the map
+    [SerializeField] public int num_Pellets_Collected = 0;
+    [SerializeField] public GameObject[] pellets_in_maze;     // referencing the amount of pellets in the map
     [SerializeField] private int num_Pellets_Left;     // seeing the amount of pellets left on the map
 
     // Audio

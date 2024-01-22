@@ -29,12 +29,15 @@ public class GhostBehavior : MonoBehaviour
     [Header("Timed Release")]
     [SerializeField] private float timeTillReleaseInSeconds = 2.0f;
 
+    [Header("Restart Position")]
+    [SerializeField] Transform restartPosition;
+
     //non exposed variables
     private NavMeshAgent ghostAgent;
     private Rigidbody rb;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         ghostAgent = GetComponent<NavMeshAgent>(); //calling ref to the agent on the ghost prefab
         rb = GetComponent<Rigidbody>();
@@ -93,5 +96,15 @@ public class GhostBehavior : MonoBehaviour
         yield return new WaitForSeconds(timeTillReleaseInSeconds);
         ghostAgent.speed = 4;
         InvokeRepeating("RandomDurationForBehavior", 5.0f, 6.0f); // repeating an random chance of behavior
+    }
+
+    public void ResetOnPlayerDeath()
+    {
+        transform.position = restartPosition.position;
+        ghostAgent.speed = 0;
+        ghostAgent.Warp(restartPosition.position);
+
+        //restarting co routine
+        StartCoroutine(StartDelayBehavior());
     }
 }

@@ -8,27 +8,58 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     //components needed to be reference for later assignment
     private Rigidbody rb;
-    private int life_Amount;
+    private int life_Amount = 3;
+    private PelletBehavior pelletBehavior;
 
     [Header("Lives")] // references the players lives
-    [SerializeField] private List<GameObject> lives;
+    [SerializeField] public List<GameObject> lives;
 
     //accessible variables in the editor
+    [Header ("Velocity")]
     [SerializeField] // <---- allows for variables to be private and can be accessed in the inspector
     private float speed = 3.0f;
+
+    //sfx
+    [Header("Sounds")]
+    [SerializeField] AudioSource deathSFX;
+    [SerializeField] AudioSource loseSFX;
+    [SerializeField] AudioSource winSFX;
+
+    //win and lose panels
+    [Header("Player Panels")]
+    [SerializeField] GameObject losePanel;
+    [SerializeField] GameObject winPanel;
+
+    [Header("Restart Position")]
+    [SerializeField] Transform restartPosition;
+
+    //grabbing ghost's reference to reset points
+    [Header("Ghosts")]
+    [SerializeField] private GhostBehavior pinkGhost;
+    [SerializeField] private GhostBehavior redGhost;
+    [SerializeField] private GhostBehavior orangeGhost;
+    [SerializeField] private GhostBehavior mintGhost;
 
     private void Start()
     {
         //componenets from game object needed to be assigned
         rb = GetComponent<Rigidbody>();
-        life_Amount = lives.Count;
+        pelletBehavior = GetComponent<PelletBehavior>();
     }
+
+    private void Update()
+    {
+        OnDeath();
+        OnWin();
+    }
+
     //called before any physics calculations
     private void FixedUpdate()
     {
@@ -49,5 +80,53 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = Vector3.zero;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Ghost"))
+        {
+            lives[life_Amount - 1].SetActive(false);
+            deathSFX.Play();
+            life_Amount -= 1;
+            ResetPosition();
+
+            // Call ResetOnPlayerDeath for each ghost
+            pinkGhost.ResetOnPlayerDeath();
+            redGhost.ResetOnPlayerDeath();
+            orangeGhost.ResetOnPlayerDeath();
+            mintGhost.ResetOnPlayerDeath();
+        }
+    }
+
+    private void OnDeath()
+    {
+        if (life_Amount == 0)
+        {
+            losePanel.SetActive(true);
+            loseSFX.Play();
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    private void OnWin()
+    {
+        if (pelletBehavior.num_Pellets_Collected == pelletBehavior.pellets_in_maze.Length)
+        {
+            winPanel.SetActive(true);
+            winSFX.Play();
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    private void ResetPosition()
+    {
+        transform.position = restartPosition.position;
     }
 }

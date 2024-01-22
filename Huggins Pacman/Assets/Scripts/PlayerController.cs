@@ -14,6 +14,10 @@ public class PlayerController : MonoBehaviour
 {
     //components needed to be reference for later assignment
     private Rigidbody rb;
+    private int life_Amount;
+
+    [Header("Lives")] // references the players lives
+    [SerializeField] private List<GameObject> lives;
 
     //accessible variables in the editor
     [SerializeField] // <---- allows for variables to be private and can be accessed in the inspector
@@ -23,6 +27,7 @@ public class PlayerController : MonoBehaviour
     {
         //componenets from game object needed to be assigned
         rb = GetComponent<Rigidbody>();
+        life_Amount = lives.Count;
     }
     //called before any physics calculations
     private void FixedUpdate()
